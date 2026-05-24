@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#7F77DD">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Theta">
+<title>Theta</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#f5f3ff;font-family:Georgia,'Times New Roman',serif;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;min-height:100dvh}
+.app{width:100%;max-width:480px;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;position:relative;background:#f5f3ff}
+.scr{display:none;flex-direction:column;align-items:center;gap:1.4rem;width:100%;text-align:center}
+.scr.on{display:flex}
+#ov{position:fixed;inset:0;background:#f5f3ff;opacity:0;transition:opacity 60s ease;pointer-events:none;z-index:10}
+.ttl{font-size:32px;color:#534AB7;letter-spacing:.3em;font-weight:400;text-transform:uppercase}
+.tsub{font-size:13px;color:#AFA9EC;letter-spacing:.2em}
+.tdesc{font-size:15px;color:#7F77DD;font-style:italic;line-height:1.9;max-width:280px}
+.card{background:#fff;border:1px solid #CECBF6;border-radius:16px;padding:1.3rem 1.2rem;width:100%;text-align:left}
+.card-title{font-size:11px;color:#AFA9EC;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem;font-family:Arial,sans-serif}
+.card-row{font-size:14px;color:#534AB7;line-height:2.3;font-family:Arial,sans-serif}
+.card-note{color:#AFA9EC;font-size:12px}
+.btn{background:#fff;border:1.5px solid #CECBF6;color:#534AB7;padding:16px 32px;font-size:15px;border-radius:50px;cursor:pointer;letter-spacing:.1em;font-family:Georgia,serif;transition:all .2s;width:100%;min-height:56px}
+.btn:active{background:#EEEDFE;border-color:#7F77DD;transform:scale(.98)}
+.btn:disabled{opacity:.3;cursor:default}
+.btn-ghost{background:transparent;border:1.5px solid #CECBF6;color:#AFA9EC;padding:14px 28px;font-size:14px;border-radius:50px;cursor:pointer;letter-spacing:.08em;font-family:Georgia,serif;transition:all .2s;width:100%;min-height:52px}
+.btn-ghost:active{background:#EEEDFE;color:#534AB7}
+.btn-ghost:disabled{opacity:.25;cursor:default}
+.install-banner{background:#fff;border:1.5px solid #7F77DD;border-radius:14px;padding:1rem 1.2rem;width:100%;display:flex;align-items:center;justify-content:space-between;gap:.8rem}
+.install-txt{font-size:13px;color:#534AB7;font-family:Arial,sans-serif;text-align:left;line-height:1.5}
+.install-btn{background:#7F77DD;color:#fff;border:none;padding:12px 20px;border-radius:30px;font-size:13px;cursor:pointer;font-family:Arial,sans-serif;white-space:nowrap;min-height:44px}
+.install-btn:active{background:#534AB7}
+.prog-bar{width:100%;height:4px;background:#EEEDFE;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#7F77DD;border-radius:2px;transition:width .5s}
+.setup-header{display:flex;justify-content:space-between;align-items:center;width:100%}
+.badge{font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 16px;border-radius:20px;background:#EEEDFE;color:#534AB7;font-family:Arial,sans-serif}
+.prog-txt{font-size:12px;color:#AFA9EC;font-family:Arial,sans-serif}
+.frase-num{font-size:12px;color:#AFA9EC;letter-spacing:.1em;font-family:Arial,sans-serif}
+.say-label{font-size:11px;color:#AFA9EC;letter-spacing:.18em;text-transform:uppercase;font-family:Arial,sans-serif}
+.say-txt{font-size:22px;color:#3C3489;font-style:italic;line-height:1.6;max-width:300px;min-height:64px;letter-spacing:.02em}
+.say-tip{font-size:13px;color:#AFA9EC;font-style:italic;line-height:1.65;max-width:280px;font-family:Arial,sans-serif}
+.rec-status{font-size:13px;letter-spacing:.08em;font-family:Arial,sans-serif;min-height:20px}
+.rec-status.done{color:#1D9E75}
+.rec-status.empty{color:#CECBF6}
+.rec-row{display:flex;gap:12px;width:100%}
+.rbtn{flex:1;border:1.5px solid #CECBF6;background:#fff;color:#7F77DD;padding:16px;font-size:14px;border-radius:50px;cursor:pointer;font-family:Arial,sans-serif;letter-spacing:.06em;transition:all .2s;min-height:54px}
+.rbtn:active,.rbtn.active{background:#FAECE7;border-color:#F0997B;color:#993C1D}
+.rbtn.done-rec{background:#E1F5EE;border-color:#5DCAA5;color:#0F6E56}
+.rbtn:disabled{opacity:.25;cursor:default}
+.nav-row{display:flex;gap:16px;align-items:center;justify-content:center;width:100%}
+.nav-btn{background:#fff;border:1.5px solid #CECBF6;color:#7F77DD;font-size:22px;cursor:pointer;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.nav-btn:active{background:#EEEDFE}
+.nav-num{font-size:13px;color:#AFA9EC;letter-spacing:.1em;min-width:56px;text-align:center;font-family:Arial,sans-serif}
+.nav-foot{display:flex;gap:12px;width:100%}
+.sess-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80dvh;width:100%;position:relative}
+.ring{width:140px;height:140px;border-radius:50%;border:2px solid #CECBF6;display:flex;align-items:center;justify-content:center;transform:scale(.42);transition:transform 4s ease-in-out,border-color 4s ease-in-out}
+.ring.exp{transform:scale(1);border-color:#7F77DD}
+.ring-core{width:80px;height:80px;border-radius:50%;background:#EEEDFE;border:2px solid #CECBF6}
+.phase-dots{display:flex;gap:14px;margin-top:3rem}
+.dot{width:8px;height:8px;border-radius:50%;background:#CECBF6;transition:background .8s}
+.dot.on{background:#7F77DD}
+.stop-btn{position:absolute;top:1rem;right:0;background:transparent;border:none;color:#CECBF6;font-size:28px;cursor:pointer;padding:.5rem;min-width:48px;min-height:48px;display:flex;align-items:center;justify-content:center}
+.stop-btn:active{color:#7F77DD}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="ov"></div>
+
+  <!-- INICIO -->
+  <div class="scr on" id="s-intro">
+    <p class="ttl">Theta</p>
+    <p class="tsub">autohipnosis</p>
+    <div id="install-banner" class="install-banner" style="display:none">
+      <p class="install-txt">Instala la app en tu escritorio</p>
+      <button class="install-btn" onclick="instalarApp()">Instalar</button>
+    </div>
+    <p class="tdesc">Graba tu propia voz para cada parte de la sesion. Te digo exactamente que decir.</p>
+    <div class="card">
+      <p class="card-title">la sesion incluye</p>
+      <div class="card-row">
+        Respiracion &mdash; 2 frases<br>
+        Escaneo corporal &mdash; 12 frases<br>
+        Cuenta regresiva &mdash; 14 frases<br>
+        Afirmaciones &mdash; 20 frases<br>
+        <span class="card-note">Total: 48. Puedes grabar en partes.</span>
+      </div>
+    </div>
+    <button class="btn" onclick="startSetup()">Comenzar grabacion</button>
+    <button class="btn-ghost" id="btn-sesion" disabled onclick="beginSession()">Ir a sesion</button>
+  </div>
+
+  <!-- GRABACION -->
+  <div class="scr" id="s-setup">
+    <div style="width:100%"><div class="prog-bar"><div class="prog-fill" id="ofill" style="width:0%"></div></div></div>
+    <div class="setup-header">
+      <span class="badge" id="cat-badge">-</span>
+      <span class="prog-txt" id="prog-txt">0 de 48</span>
+    </div>
+    <p class="frase-num" id="frase-num">Frase 1 de 48</p>
+    <p class="say-label">Di esto en voz pausada:</p>
+    <p class="say-txt" id="say-txt">-</p>
+    <p class="say-tip" id="say-tip"></p>
+    <p class="rec-status empty" id="rec-st">Sin grabar</p>
+    <div class="rec-row">
+      <button class="rbtn" id="rbtn" onclick="toggleRec()">Grabar</button>
+      <button class="rbtn" id="playbtn" onclick="playItem()" disabled>Escuchar</button>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="go(-1)">&#8592;</button>
+      <span class="nav-num" id="nav-num">1 / 48</span>
+      <button class="nav-btn" onclick="go(1)">&#8594;</button>
+    </div>
+    <div class="nav-foot">
+      <button class="btn-ghost" style="flex:1" onclick="goIntro()">Inicio</button>
+      <button class="btn" style="flex:2" id="btn-iniciar" disabled onclick="beginSession()">Iniciar sesion</button>
+    </div>
+  </div>
+
+  <!-- SESION -->
+  <div class="scr" id="s-session">
+    <div class="sess-wrap">
+      <div class="ring" id="ring" style="opacity:0;transition:opacity .8s"><div class="ring-core"></div></div>
+      <div class="phase-dots">
+        <div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div>
+        <div class="dot" id="d3"></div>
+        <div class="dot" id="d4"></div>
+      </div>
+      <button class="stop-btn" onclick="stopSess()">&#10005;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var ITEMS=[
+  {cat:'Respiracion',key:'r_b0',say:'inhala...',tip:'Alarga la palabra. Lento y prolongado.',pause:3200,rate:0.7,pitch:0.84},
+  {cat:'Respiracion',key:'r_b1',say:'exhala...',tip:'Suave y lento. Que suene a liberacion total.',pause:5200,rate:0.68,pitch:0.82},
+  {cat:'Escaneo',key:'r_s0',say:'Cierra los ojos... suavemente...',tip:'Pausa en cada punto suspensivo. Voz baja.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s1',say:'Siente tu cabeza... completamente relajada...',tip:'Lento. Deja silencio despues.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s2',say:'Tu frente se suaviza... sin tension...',tip:'Calmado y bajo.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s3',say:'Tus ojos descansan... pesados... tranquilos...',tip:'Cada palabra mas lenta.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s4',say:'Tu mandibula se afloja... naturalmente...',tip:'Como si ya estuvieras relajado.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s5',say:'Tu cuello y hombros... se sueltan...',tip:'Voz descendente al final.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s6',say:'Tus brazos se vuelven pesados... muy pesados...',tip:'"Muy pesados" aun mas lento.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s7',say:'Tu pecho sube y baja... suave... lentamente...',tip:'Ritmo de respiracion tranquila.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s8',say:'Tu abdomen se relaja... completamente...',tip:'Expira un poco al final.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s9',say:'Tus piernas son pesadas... como plomo...',tip:'Que se sienta ese peso.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s10',say:'Tus pies descansan... en paz total...',tip:'Casi susurrado al final.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Escaneo',key:'r_s11',say:'Todo tu ser... completamente relajado...',tip:'La mas lenta. Como un suspiro.',pause:2400,rate:0.74,pitch:0.87},
+  {cat:'Profundizacion',key:'r_d0',say:'Imagina que desciendes por una escalera tranquila...',tip:'Evoca bajar suavemente.',pause:2600,rate:0.72,pitch:0.86},
+  {cat:'Profundizacion',key:'r_d1',say:'Con cada numero iras mas y mas profundo...',tip:'Enfasis suave en "mas y mas".',pause:2600,rate:0.72,pitch:0.86},
+  {cat:'Profundizacion',key:'r_d2',say:'Diez...',tip:'Solo el numero. Muy lento.',pause:3600,rate:0.7,pitch:0.85},
+  {cat:'Profundizacion',key:'r_d3',say:'Nueve...',tip:'Un poco mas lento.',pause:3600,rate:0.7,pitch:0.85},
+  {cat:'Profundizacion',key:'r_d4',say:'Ocho...',tip:'Mas profundo y lejano.',pause:3600,rate:0.7,pitch:0.85},
+  {cat:'Profundizacion',key:'r_d5',say:'Siete...',tip:'Voz mas baja.',pause:3600,rate:0.7,pitch:0.85},
+  {cat:'Profundizacion',key:'r_d6',say:'Seis...',tip:'Calma total.',pause:3600,rate:0.7,pitch:0.85},
+  {cat:'Profundizacion',key:'r_d7',say:'Cinco...',tip:'Profundo. Sin prisa.',pause:3600,rate:0.7,pitch:0.85},
+  {cat:'Profundizacion',key:'r_d8',say:'Cuatro...',tip:'Casi en theta.',pause:3600,rate:0.7,pitch:0.85},
+  {cat:'Profundizacion',key:'r_d9',say:'Tres...',tip:'Los tres ultimos son los mas importantes.',pause:3600,rate:0.69,pitch:0.84},
+  {cat:'Profundizacion',key:'r_d10',say:'Dos...',tip:'Pausa larga al final.',pause:3600,rate:0.68,pitch:0.83},
+  {cat:'Profundizacion',key:'r_d11',say:'Uno...',tip:'El mas lento. Que resuene.',pause:4000,rate:0.67,pitch:0.82},
+  {cat:'Profundizacion',key:'r_d12',say:'Estas en el estado theta...',tip:'Suave y seguro.',pause:2800,rate:0.72,pitch:0.86},
+  {cat:'Profundizacion',key:'r_d13',say:'Tu mente subconsciente esta abierta... y receptiva...',tip:'Pausa entre "abierta" y "receptiva".',pause:2800,rate:0.72,pitch:0.86},
+  {cat:'Afirmacion',key:'r_a0',say:'Estoy completamente en paz',tip:'Conviccion tranquila. Ya es asi.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a1',say:'Mi mente descansa profundamente',tip:'Hecho presente.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a2',say:'Suelto todo lo que no me sirve',tip:'Exhala un poco.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a3',say:'Me siento seguro y protegido',tip:'Firme y calido.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a4',say:'Confio plenamente en mi mismo',tip:'Autoridad suave.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a5',say:'Soy capaz de lograr todo lo que me propongo',tip:'Energia tranquila.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a6',say:'Me acepto y me valoro profundamente',tip:'Tono de amor propio.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a7',say:'Soy suficiente, exactamente como soy',tip:'Con paz.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a8',say:'Mi valor es innato e inquebrantable',tip:'Solido.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a9',say:'La abundancia fluye hacia mi naturalmente',tip:'Fluido y seguro.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a10',say:'Merezco prosperidad en todas las areas de mi vida',tip:'Sin dudas.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a11',say:'Estoy abierto a recibir todo lo bueno',tip:'Receptivo.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a12',say:'El exito y la prosperidad son mi estado natural',tip:'Como si siempre lo supieras.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a13',say:'Atraigo oportunidades extraordinarias',tip:'Expectativa tranquila.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a14',say:'Cada dia soy mas fuerte y seguro',tip:'Que se sienta el crecimiento.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a15',say:'La vida me brinda todo lo que necesito',tip:'Agradecido y tranquilo.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a16',say:'Soy prospero en mente, cuerpo y espiritu',tip:'Las tres dimensiones.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a17',say:'Me merezco el amor, la abundancia y la paz',tip:'Ternura hacia ti mismo.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a18',say:'Mi futuro es brillante y lleno de posibilidades',tip:'Ilusion tranquila.',pause:3800,rate:0.73,pitch:0.88},
+  {cat:'Afirmacion',key:'r_a19',say:'Confio plenamente en el proceso de la vida',tip:'La ultima. Paz total.',pause:3800,rate:0.73,pitch:0.88}
+];
+
+var curIdx=0,running=false,wl=null,db=null;
+var isRec=false,mediaRec=null,recChunks=[];
+var hasSpeech=('speechSynthesis' in window);
+var deferredPrompt=null;
+
+// Instalar PWA
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').style.display='flex';
+});
+window.addEventListener('appinstalled',function(){
+  document.getElementById('install-banner').style.display='none';
+  deferredPrompt=null;
+});
+function instalarApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}
+}
+
+// IndexedDB
+function openDB(){return new Promise(function(res,rej){var req=indexedDB.open('ThetaApp',1);req.onupgradeneeded=function(e){e.target.result.createObjectStore('recs',{keyPath:'key'});};req.onsuccess=function(e){db=e.target.result;res(db);};req.onerror=rej;});}
+function saveBlob(key,blob){return new Promise(function(res,rej){var tx=db.transaction('recs','readwrite');tx.objectStore('recs').put({key:key,blob:blob});tx.oncomplete=res;tx.onerror=rej;});}
+function loadBlob(key){return new Promise(function(res){var tx=db.transaction('recs','readonly');var req=tx.objectStore('recs').get(key);req.onsuccess=function(){res(req.result?req.result.blob:null);};req.onerror=function(){res(null);};});}
+function keyExists(key){return new Promise(function(res){var tx=db.transaction('recs','readonly');var req=tx.objectStore('recs').count(IDBKeyRange.only(key));req.onsuccess=function(){res(req.result>0);};req.onerror=function(){res(false);};});}
+function countAll(){return new Promise(function(res){var tx=db.transaction('recs','readonly');var req=tx.objectStore('recs').count();req.onsuccess=function(){res(req.result);};req.onerror=function(){res(0);};});}
+
+// Speech
+var voices=[],prefVoice=null;
+function loadVoices(){if(!hasSpeech)return;voices=speechSynthesis.getVoices();prefVoice=voices.find(function(v){return v.lang.indexOf('es-ES')===0;})||voices.find(function(v){return v.lang.indexOf('es-')===0;})||voices.find(function(v){return v.lang.indexOf('es')===0;})||null;}
+if(hasSpeech)speechSynthesis.onvoiceschanged=loadVoices;
+loadVoices();
+function speak(txt,rate,pitch,pauseMs){rate=rate||0.75;pitch=pitch||0.88;pauseMs=pauseMs||800;return new Promise(function(res){if(!running||!hasSpeech){res();return;}var u=new SpeechSynthesisUtterance(txt);u.lang='es-ES';if(prefVoice)u.voice=prefVoice;u.rate=rate;u.pitch=pitch;var fb=setTimeout(res,Math.min(35000,txt.split(' ').length*750/rate)+pauseMs+2000);u.onend=function(){clearTimeout(fb);setTimeout(res,pauseMs);};u.onerror=function(){clearTimeout(fb);setTimeout(res,pauseMs);};speechSynthesis.speak(u);});}
+function wait(ms){return new Promise(function(r){if(!running){r();return;}setTimeout(r,ms);});}
+function playBlob(blob){return new Promise(function(r){var url=URL.createObjectURL(blob);var a=new Audio(url);a.onended=function(){URL.revokeObjectURL(url);r();};a.onerror=function(){URL.revokeObjectURL(url);r();};a.play().catch(r);});}
+function playOrSpeak(it){return loadBlob(it.key).then(function(b){if(b){return playBlob(b).then(function(){return wait(it.pause);});}else{return speak(it.say,it.rate,it.pitch,it.pause);}});}
+
+// UI
+function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on');});document.getElementById('s-'+id).classList.add('on');}
+function dot(n){[1,2,3,4].forEach(function(i){document.getElementById('d'+i).classList.toggle('on',i===n);});}
+function startSetup(){show('setup');curIdx=0;updateUI();}
+function goIntro(){if(isRec)stopRec();show('intro');}
+function updateUI(){countAll().then(function(total){document.getElementById('ofill').style.width=(total/48*100).toFixed(1)+'%';document.getElementById('prog-txt').textContent=total+' de 48';var it=ITEMS[curIdx];document.getElementById('cat-badge').textContent=it.cat;document.getElementById('frase-num').textContent='Frase '+(curIdx+1)+' de 48';document.getElementById('nav-num').textContent=(curIdx+1)+' / 48';document.getElementById('say-txt').textContent=it.say;document.getElementById('say-tip').textContent=it.tip;return keyExists(it.key).then(function(done){var st=document.getElementById('rec-st');st.textContent=done?'Grabada':'Sin grabar';st.className='rec-status '+(done?'done':'empty');var rb=document.getElementById('rbtn');rb.textContent=done?'Re-grabar':'Grabar';rb.className='rbtn'+(done?' done-rec':'');document.getElementById('playbtn').disabled=!done;document.getElementById('btn-iniciar').disabled=(total<1);document.getElementById('btn-sesion').disabled=(total<1);});});}
+function go(d){if(isRec)stopRec();curIdx=Math.max(0,Math.min(47,curIdx+d));updateUI();}
+function toggleRec(){if(isRec)stopRec();else startRec();}
+function startRec(){navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(function(stream){recChunks=[];mediaRec=new MediaRecorder(stream);mediaRec.ondataavailable=function(e){if(e.data.size>0)recChunks.push(e.data);};mediaRec.onstop=function(){stream.getTracks().forEach(function(t){t.stop();});var blob=new Blob(recChunks,{type:'audio/webm'});saveBlob(ITEMS[curIdx].key,blob).then(function(){if(curIdx<47)curIdx++;updateUI();});};mediaRec.start(100);isRec=true;var rb=document.getElementById('rbtn');rb.textContent='Detener';rb.className='rbtn active';}).catch(function(){alert('Activa el microfono en Ajustes > Chrome > Microfono.');});}
+function stopRec(){if(mediaRec&&isRec){mediaRec.stop();isRec=false;}}
+function playItem(){loadBlob(ITEMS[curIdx].key).then(function(b){if(b)playBlob(b);});}
+
+// Sesion
+function beginSession(){running=true;if('wakeLock' in navigator)navigator.wakeLock.request('screen').then(function(w){wl=w;}).catch(function(){});show('session');doBreath().then(function(){if(!running)return;return doScan();}).then(function(){if(!running)return;return doDeep();}).then(function(){if(!running)return;return doAff();}).then(function(){if(running)doDrift();});}
+function doBreath(){dot(1);var ring=document.getElementById('ring');ring.style.opacity='1';var p=hasSpeech?speak('Comenzamos. Respira conmigo.',0.76,0.88):Promise.resolve();return p.then(function(){return wait(400);}).then(function(){var chain=Promise.resolve();for(var c=0;c<6;c++){(function(){chain=chain.then(function(){if(!running)return;ring.classList.add('exp');return loadBlob('r_b0').then(function(ib){if(ib)playBlob(ib);else if(hasSpeech){var u=new SpeechSynthesisUtterance('inhala');u.lang='es-ES';u.rate=0.7;u.pitch=0.84;speechSynthesis.speak(u);}return wait(4600);}).then(function(){ring.classList.remove('exp');return loadBlob('r_b1').then(function(eb){if(eb)playBlob(eb);else if(hasSpeech){var u=new SpeechSynthesisUtterance('exhala');u.lang='es-ES';u.rate=0.68;u.pitch=0.82;speechSynthesis.speak(u);}return wait(6800);});});});}());}return chain;}).then(function(){ring.style.opacity='0';return hasSpeech?speak('Perfecto. Tu respiracion es profunda y tranquila.',0.76,0.88):Promise.resolve();}).then(function(){return wait(500);});}
+function doScan(){dot(2);var chain=Promise.resolve();ITEMS.slice(2,14).forEach(function(it){chain=chain.then(function(){if(!running)return;return playOrSpeak(it);});});return chain;}
+function doDeep(){dot(3);var chain=Promise.resolve();ITEMS.slice(14,28).forEach(function(it){chain=chain.then(function(){if(!running)return;return playOrSpeak(it);});});return chain;}
+function doAff(){dot(4);var aff=ITEMS.slice(28),loop=0,idx=0,dimmed=false;function next(){if(!running||loop>=3)return Promise.resolve();return playOrSpeak(aff[idx]).then(function(){idx++;if(idx>=aff.length){idx=0;loop++;if(!dimmed){dimmed=true;var ov=document.getElementById('ov');ov.style.transition='opacity 400s ease';ov.style.opacity='.9';}}return next();});}return next();}
+function doDrift(){if(hasSpeech)speechSynthesis.cancel();var ov=document.getElementById('ov');ov.style.transition='opacity 100s ease';ov.style.opacity='1';if(wl){wl.release().catch(function(){});wl=null;}}
+function stopSess(){running=false;if(hasSpeech)speechSynthesis.cancel();if(wl){wl.release().catch(function(){});wl=null;}var ov=document.getElementById('ov');ov.style.transition='opacity .5s';ov.style.opacity='0';show('intro');}
+
+window.addEventListener('load',function(){openDB().then(function(){updateUI();}).catch(function(e){console.error('DB:',e);});});
+</script>
+</body>
+</html>
